@@ -27,8 +27,10 @@ import csv
 import json
 import copy
 def export():
-    # Если при запуске указан город, то в SQL-запрос добавляется условие "WHERE"
 
+    # Добавляем аргументы для теста
+    sys.argv.append('--csv')
+    #sys.argv.append('Moscow')
     # Проверка на корректность параметра формата экспорта
     try:
         exp_format = sys.argv[1]
@@ -40,18 +42,20 @@ def export():
         print('Вы указали неверный формат экспорта! (--csv/--xml/--html)')
         exit()
 
+    # Если при запуске указан город, то в SQL-запрос добавляется условие "WHERE"
     if len(sys.argv) > 2:
         city_name = sys.argv[2]
         file_name = '{}.txt'.format(city_name)
         sql_condition = 'WHERE city = "{}"'.format(city_name)
     else:
-        file_name = 'weather.txt'
+        file_name = 'weather.{}'.format(exp_format[2:])
         sql_condition = ''
     db_name = 'weather.db'  # задаем имя файла с базой данных
+
+    # Запрос к базе
     if os.path.exists(db_name):
         weather_db = sqlite3.connect(db_name)
         cursor = weather_db.cursor()
-        cursor.executescript('.headers on')
         cursor.execute(
             '''
             SELECT *
@@ -59,10 +63,21 @@ def export():
             {}
             '''.format(sql_condition)
         )
-        weather_data = cursor.fetchmany(10)
-        print(weather_data)
-        with open(file_name, 'w', encoding='UTF-8') as file:
-            file.write(str(weather_data))
+        weather_data = cursor.fetchall()
+        col_names = [col[0] for col in cursor.description]
+
+        # экспорт файла в зависимости от формата
+        if exp_format == '--csv':
+            with open(file_name, 'w', encoding='UTF-8') as file:
+                file.write(', '.join(col_names))
+                file.write('\n')
+                for row in weather_data:
+                    file.write(str(row)[1:-1])
+                    file.write('\n')
+        elif exp_format == '--html':
+            pass
+        elif exp_format == '--json':
+            pass
     else:
         print('Файл с базой данных не найден! Он должен называться "weather.db" и лежать в одной папке со скриптом!')
         exit()
