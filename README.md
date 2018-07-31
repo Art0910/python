@@ -1,1 +1,1 @@
-Здесь я выкладываю работы на python, созданные во время обучения на GeekBrains.
+Here are some student project on Python
