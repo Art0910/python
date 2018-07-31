@@ -29,8 +29,8 @@ import copy
 def export():
 
     # Добавляем аргументы для теста
-    sys.argv.append('--csv')
-    sys.argv.append('Moscow')
+    # sys.argv.append('--csv')
+    # sys.argv.append('Moscow')
     # Проверка на корректность параметра формата экспорта
     try:
         exp_format = sys.argv[1]
