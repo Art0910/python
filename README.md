@@ -1,1 +1,1 @@
-Here are some student project on Python
+Here are some student projects on Python
