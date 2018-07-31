@@ -30,7 +30,7 @@ def export():
 
     # Добавляем аргументы для теста
     sys.argv.append('--csv')
-    #sys.argv.append('Moscow')
+    sys.argv.append('Moscow')
     # Проверка на корректность параметра формата экспорта
     try:
         exp_format = sys.argv[1]
@@ -64,6 +64,12 @@ def export():
             '''.format(sql_condition)
         )
         weather_data = cursor.fetchall()
+
+        # Проверка на наличие выбранного города в базе
+        if not weather_data:
+            print('Данных о городе "{}" в базе нет! Выберите другой город или загрузите данные с сервера.'
+                  .format(city_name))
+            exit()
         col_names = [col[0] for col in cursor.description]
 
         # экспорт файла в зависимости от формата
